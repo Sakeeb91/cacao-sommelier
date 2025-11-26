@@ -1,8 +1,17 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 import { PairingResponse, GroundingSource } from "../types";
 
-// Initialize the SDK
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Initialize the SDK only if API key is available
+// Use a placeholder key to prevent constructor errors, then check validity in functions
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || 'placeholder';
+let ai: GoogleGenAI | null = null;
+
+try {
+  ai = new GoogleGenAI({ apiKey: apiKey === 'placeholder' ? '' : apiKey });
+} catch (error) {
+  console.warn('Gemini API not initialized. Some features will be unavailable.');
+  ai = null;
+}
 
 // Constants for Models
 const TEXT_MODEL = "gemini-2.5-flash";
@@ -19,6 +28,9 @@ const activeRequests = new Map<string, Promise<string>>();
  * Generates a chocolate pairing suggestion based on user input using Search Grounding.
  */
 export const getPairingSuggestion = async (query: string): Promise<PairingResponse> => {
+  if (!ai) {
+    throw new Error("Gemini API key not configured. Please set VITE_GEMINI_API_KEY in your environment.");
+  }
   try {
     const systemInstruction = "You are a world-class chocolate sommelier. Provide a sophisticated and concise pairing suggestion (maximum 80 words) for the user's query. Explain why the chocolate profile (dark, nutty, floral, etc.) complements the query item. Use an elegant and descriptive tone.";
     const fullQuery = `Suggest a premium dark chocolate pairing for: "${query}"`;
@@ -34,7 +46,7 @@ export const getPairingSuggestion = async (query: string): Promise<PairingRespon
     });
 
     const text = response.text || "I apologize, I could not generate a pairing at this moment.";
-    
+
     // Extract grounding chunks if available
     const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
     const sources: GroundingSource[] = groundingChunks
@@ -61,6 +73,9 @@ export const getPairingSuggestion = async (query: string): Promise<PairingRespon
  * Returns an AudioBuffer for playback.
  */
 export const generateTastingAudio = async (text: string, audioContext: AudioContext): Promise<AudioBuffer> => {
+  if (!ai) {
+    throw new Error("Gemini API key not configured. Audio generation unavailable.");
+  }
   try {
     const prompt = `Say in a smooth, informative, and luxurious tone: "${text}"`;
 
@@ -92,9 +107,9 @@ export const generateTastingAudio = async (text: string, audioContext: AudioCont
     }
 
     try {
-        return await audioContext.decodeAudioData(bytes.buffer);
+      return await audioContext.decodeAudioData(bytes.buffer);
     } catch (e) {
-         return await decodePCM(bytes, audioContext);
+      return await decodePCM(bytes, audioContext);
     }
 
   } catch (error) {
@@ -141,6 +156,9 @@ export const generateImage = async (prompt: string): Promise<string> => {
 
   // 3. Create New Request
   const requestPromise = (async () => {
+    if (!ai) {
+      throw new Error("Gemini API key not configured. Image generation unavailable.");
+    }
     try {
       const response = await ai.models.generateContent({
         model: IMAGE_MODEL,
@@ -154,16 +172,16 @@ export const generateImage = async (prompt: string): Promise<string> => {
       if (parts) {
         for (const part of parts) {
           if (part.inlineData && part.inlineData.data) {
-             const imageUrl = `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
-             
-             // Save to Cache
-             imageCache.set(prompt, imageUrl);
-             
-             return imageUrl;
+            const imageUrl = `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
+
+            // Save to Cache
+            imageCache.set(prompt, imageUrl);
+
+            return imageUrl;
           }
         }
       }
-      
+
       throw new Error("No image data found in response");
     } catch (error) {
       console.error("Gemini Image Gen Error:", error);

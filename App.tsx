@@ -13,7 +13,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen text-cocoa-900 font-sans selection:bg-cocoa-900 selection:text-white">
       <Navbar />
-      
+
       <main className="pt-32 pb-20 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <Hero />
