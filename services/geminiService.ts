@@ -16,7 +16,7 @@ try {
 // Constants for Models
 const TEXT_MODEL = "gemini-2.5-flash";
 const TTS_MODEL = "gemini-2.5-flash-preview-tts";
-const IMAGE_MODEL = "gemini-2.5-flash-image";
+const IMAGE_MODEL = "gemini-3-pro-image-preview";
 
 // In-memory cache to store generated images (Base64 strings)
 const imageCache = new Map<string, string>();
@@ -138,16 +138,45 @@ async function decodePCM(
   return buffer;
 }
 
+// In-memory cache to store generated images (Base64 strings)
+// We also sync this with localStorage for persistence
+const CACHE_KEY_PREFIX = 'cacao_img_cache_';
+
+const getFromCache = (key: string): string | null => {
+  // 1. Check Memory
+  if (imageCache.has(key)) return imageCache.get(key)!;
+
+  // 2. Check LocalStorage
+  try {
+    const stored = localStorage.getItem(CACHE_KEY_PREFIX + key);
+    if (stored) {
+      imageCache.set(key, stored); // Hydrate memory cache
+      return stored;
+    }
+  } catch (e) {
+    console.warn("LocalStorage access failed", e);
+  }
+  return null;
+};
+
+const saveToCache = (key: string, value: string) => {
+  imageCache.set(key, value);
+  try {
+    localStorage.setItem(CACHE_KEY_PREFIX + key, value);
+  } catch (e) {
+    console.warn("LocalStorage write failed (likely quota exceeded)", e);
+  }
+};
+
 /**
  * Generates an image using Gemini Flash Image model.
  * Returns a Base64 data URL.
- * Implements Caching (Memory + Request Deduplication) to prevent re-generation.
+ * Implements Caching (Memory + LocalStorage + Request Deduplication) to prevent re-generation.
  */
 export const generateImage = async (prompt: string): Promise<string> => {
-  // 1. Check Memory Cache
-  if (imageCache.has(prompt)) {
-    return imageCache.get(prompt)!;
-  }
+  // 1. Check Cache (Memory + LocalStorage)
+  const cached = getFromCache(prompt);
+  if (cached) return cached;
 
   // 2. Check In-Flight Requests (Deduplication)
   if (activeRequests.has(prompt)) {
@@ -175,7 +204,7 @@ export const generateImage = async (prompt: string): Promise<string> => {
             const imageUrl = `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
 
             // Save to Cache
-            imageCache.set(prompt, imageUrl);
+            saveToCache(prompt, imageUrl);
 
             return imageUrl;
           }

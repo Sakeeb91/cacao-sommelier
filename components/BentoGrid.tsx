@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import GenAIImage from './GenAIImage';
+import { STATIC_PROMPTS } from '../src/constants/prompts';
 
 const BentoGrid: React.FC = () => {
   const [showMapModal, setShowMapModal] = useState(false);
@@ -25,7 +26,7 @@ const BentoGrid: React.FC = () => {
     <>
       <div className="mb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          
+
           {/* Large Text Card */}
           <div className="col-span-1 md:col-span-2 lg:col-span-2 bg-white rounded-4xl p-8 md:p-10 smooth-shadow flex flex-col justify-between min-h-[300px] relative z-0">
             <div>
@@ -37,8 +38,8 @@ const BentoGrid: React.FC = () => {
                 We bypass the middlemen. Our data-driven roasting process ensures that every bean's unique genetic flavor profile is preserved, not burned.
               </p>
             </div>
-            <a 
-              href="#process" 
+            <a
+              href="#process"
               onClick={(e) => scrollToSection(e, 'process')}
               className="mt-8 w-max px-6 py-3 rounded-full bg-orange-50 text-orange-800 text-sm font-semibold hover:bg-orange-100 transition-colors flex items-center gap-2"
             >
@@ -47,17 +48,18 @@ const BentoGrid: React.FC = () => {
           </div>
 
           {/* Stat Card 1: Single Origin Countries (Interactive Map) */}
-          <div 
+          <div
             onClick={() => setShowMapModal(true)}
             className="col-span-1 bg-cocoa-900 text-white rounded-4xl p-8 smooth-shadow flex flex-col justify-between group cursor-pointer hover:bg-cocoa-800 transition-colors relative overflow-hidden"
           >
             {/* AI Background Map */}
             <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700 mix-blend-overlay pointer-events-none">
-                <GenAIImage 
-                    prompt="Vintage artistic world map illustration, golden lines on dark brown background, focusing on the equator, elegant, minimalist, high detail"
-                    alt="World Map Texture"
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
-                />
+              <GenAIImage
+                prompt={STATIC_PROMPTS.WORLD_MAP_TEXTURE.prompt}
+                staticSrc={`/images/generated/${STATIC_PROMPTS.WORLD_MAP_TEXTURE.filename}`}
+                alt="World Map Texture"
+                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+              />
             </div>
             {/* Gradient Overlay for Text Readability */}
             <div className="absolute inset-0 bg-gradient-to-t from-cocoa-900 via-cocoa-900/50 to-transparent opacity-90"></div>
@@ -78,11 +80,12 @@ const BentoGrid: React.FC = () => {
           <div className="col-span-1 bg-white rounded-4xl p-8 smooth-shadow flex flex-col justify-between group hover:ring-2 hover:ring-gold-400/30 transition-all relative overflow-hidden">
             {/* AI Background Illustration */}
             <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none">
-                <GenAIImage 
-                    prompt="Minimalist continuous line art illustration connecting a cacao pod to a digital blockchain cube, tech agriculture concept, elegant ink drawing"
-                    alt="Traceability Illustration"
-                    className="w-full h-full object-cover"
-                />
+              <GenAIImage
+                prompt={STATIC_PROMPTS.TRACEABILITY_ILLUSTRATION.prompt}
+                staticSrc={`/images/generated/${STATIC_PROMPTS.TRACEABILITY_ILLUSTRATION.filename}`}
+                alt="Traceability Illustration"
+                className="w-full h-full object-cover"
+              />
             </div>
 
             <div className="relative z-10 flex justify-between items-start">
@@ -100,18 +103,18 @@ const BentoGrid: React.FC = () => {
 
       {/* Lower Bento Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
+
         {/* Dark Mode Mobile App Preview Card */}
         <div className="col-span-1 md:col-span-2 bg-black rounded-4xl p-8 md:p-12 relative overflow-hidden text-white smooth-shadow min-h-[400px] group">
           {/* Background Mesh */}
           <div className="absolute inset-0 opacity-40 pointer-events-none" style={{ background: 'radial-gradient(circle at 50% 120%, #d4af37 0%, transparent 50%)' }}></div>
-          
+
           <div className="relative z-10 flex flex-col h-full">
             <div className="flex justify-between items-start mb-8">
               <i className="fa-solid fa-mobile-screen-button text-2xl"></i>
               <span className="text-xs font-mono border border-white/20 px-2 py-1 rounded">App Beta</span>
             </div>
-            
+
             <div className="max-w-md">
               <h3 className="font-serif text-3xl mb-4">Your Personal Sommelier.</h3>
               <p className="text-white/60 mb-8">Scan any bar wrapper to unlock tasting notes, pairing suggestions, and the exact farmer who grew your beans.</p>
@@ -119,7 +122,7 @@ const BentoGrid: React.FC = () => {
                 Download App
               </button>
             </div>
-            
+
             {/* Mock UI Element */}
             <div className="absolute bottom-[-20px] right-8 w-64 bg-gray-900 rounded-t-3xl border border-white/10 p-4 shadow-2xl translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
               <div className="flex items-center gap-3 mb-4">
@@ -136,70 +139,71 @@ const BentoGrid: React.FC = () => {
 
         {/* Vertical Typography Card */}
         <div className="col-span-1 bg-white rounded-4xl p-8 smooth-shadow flex flex-col items-center justify-center text-center relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-8 opacity-5 font-serif text-9xl leading-none select-none pointer-events-none group-hover:scale-110 transition-transform duration-700 text-cocoa-900">Aa</div>
-            
-            <div className="relative z-10">
-                <div className="font-serif text-4xl md:text-5xl mb-2 tracking-tight text-cocoa-900">Cacao.</div>
-                <div className="flex gap-3 justify-center text-xs uppercase tracking-widest text-cocoa-900/40 mt-4">
-                    <span>Bold</span>
-                    <span>•</span>
-                    <span>Earthy</span>
-                    <span>•</span>
-                    <span>Pure</span>
-                </div>
+          <div className="absolute top-0 right-0 p-8 opacity-5 font-serif text-9xl leading-none select-none pointer-events-none group-hover:scale-110 transition-transform duration-700 text-cocoa-900">Aa</div>
+
+          <div className="relative z-10">
+            <div className="font-serif text-4xl md:text-5xl mb-2 tracking-tight text-cocoa-900">Cacao.</div>
+            <div className="flex gap-3 justify-center text-xs uppercase tracking-widest text-cocoa-900/40 mt-4">
+              <span>Bold</span>
+              <span>•</span>
+              <span>Earthy</span>
+              <span>•</span>
+              <span>Pure</span>
             </div>
-            
-            {/* Color Swatches */}
-            <div className="mt-12 flex gap-4">
-                <div className="w-8 h-12 rounded-full bg-cocoa-900 shadow-sm transition-transform hover:-translate-y-2 duration-300"></div>
-                <div className="w-8 h-12 rounded-full bg-cocoa-800 shadow-sm mt-4 transition-transform hover:-translate-y-2 duration-300 delay-75"></div>
-                <div className="w-8 h-12 rounded-full bg-orange-700 shadow-sm transition-transform hover:-translate-y-2 duration-300 delay-100"></div>
-                <div className="w-8 h-12 rounded-full bg-[#fdf8f6] border border-gray-100 shadow-sm mt-4 transition-transform hover:-translate-y-2 duration-300 delay-150"></div>
-            </div>
+          </div>
+
+          {/* Color Swatches */}
+          <div className="mt-12 flex gap-4">
+            <div className="w-8 h-12 rounded-full bg-cocoa-900 shadow-sm transition-transform hover:-translate-y-2 duration-300"></div>
+            <div className="w-8 h-12 rounded-full bg-cocoa-800 shadow-sm mt-4 transition-transform hover:-translate-y-2 duration-300 delay-75"></div>
+            <div className="w-8 h-12 rounded-full bg-orange-700 shadow-sm transition-transform hover:-translate-y-2 duration-300 delay-100"></div>
+            <div className="w-8 h-12 rounded-full bg-[#fdf8f6] border border-gray-100 shadow-sm mt-4 transition-transform hover:-translate-y-2 duration-300 delay-150"></div>
+          </div>
         </div>
       </div>
 
       {/* --- Map Modal --- */}
       {showMapModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-cocoa-900/95 backdrop-blur-md animate-fade-in-up" onClick={() => setShowMapModal(false)}></div>
-            
-            <div className="relative bg-white w-full max-w-5xl aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl animate-fade-in-up flex flex-col">
-                <button 
-                    onClick={() => setShowMapModal(false)}
-                    className="absolute top-6 right-6 z-20 w-12 h-12 bg-white/80 backdrop-blur rounded-full shadow-lg flex items-center justify-center text-cocoa-900 hover:bg-cocoa-900 hover:text-white transition-all hover:rotate-90"
-                >
-                    <i className="fa-solid fa-xmark text-xl"></i>
-                </button>
+          <div className="absolute inset-0 bg-cocoa-900/95 backdrop-blur-md animate-fade-in-up" onClick={() => setShowMapModal(false)}></div>
 
-                <div className="flex-grow relative bg-[#f2e8e5]">
-                    {/* Generative Map */}
-                    <GenAIImage 
-                        prompt="Artistic stylized world map illustration on textured paper, highlighting Ecuador, Madagascar, and Venezuela with golden pins, vintage explorer style, high detail"
-                        alt="Global Sourcing Map"
-                        className="w-full h-full object-cover"
-                    />
-                    
-                    {/* Overlay Info */}
-                    <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-white via-white/90 to-transparent p-8 md:p-12">
-                         <h3 className="font-serif text-4xl text-cocoa-900 mb-4">Global Origins</h3>
-                         <div className="flex flex-wrap gap-4 md:gap-8">
-                            <div className="flex items-center gap-2 group cursor-default">
-                                <span className="w-3 h-3 rounded-full bg-orange-700 group-hover:scale-125 transition-transform"></span>
-                                <span className="text-cocoa-900 font-bold">Ecuador (Manabí)</span>
-                            </div>
-                            <div className="flex items-center gap-2 group cursor-default">
-                                <span className="w-3 h-3 rounded-full bg-gold-400 group-hover:scale-125 transition-transform"></span>
-                                <span className="text-cocoa-900 font-bold">Madagascar (Sambirano)</span>
-                            </div>
-                            <div className="flex items-center gap-2 group cursor-default">
-                                <span className="w-3 h-3 rounded-full bg-cocoa-900 group-hover:scale-125 transition-transform"></span>
-                                <span className="text-cocoa-900 font-bold">Venezuela (Chuao)</span>
-                            </div>
-                         </div>
-                    </div>
+          <div className="relative bg-white w-full max-w-5xl aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl animate-fade-in-up flex flex-col">
+            <button
+              onClick={() => setShowMapModal(false)}
+              className="absolute top-6 right-6 z-20 w-12 h-12 bg-white/80 backdrop-blur rounded-full shadow-lg flex items-center justify-center text-cocoa-900 hover:bg-cocoa-900 hover:text-white transition-all hover:rotate-90"
+            >
+              <i className="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div className="flex-grow relative bg-[#f2e8e5]">
+              {/* Generative Map */}
+              <GenAIImage
+                prompt={STATIC_PROMPTS.GLOBAL_SOURCING_MAP.prompt}
+                staticSrc={`/images/generated/${STATIC_PROMPTS.GLOBAL_SOURCING_MAP.filename}`}
+                alt="Global Sourcing Map"
+                className="w-full h-full object-cover"
+              />
+
+              {/* Overlay Info */}
+              <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-white via-white/90 to-transparent p-8 md:p-12">
+                <h3 className="font-serif text-4xl text-cocoa-900 mb-4">Global Origins</h3>
+                <div className="flex flex-wrap gap-4 md:gap-8">
+                  <div className="flex items-center gap-2 group cursor-default">
+                    <span className="w-3 h-3 rounded-full bg-orange-700 group-hover:scale-125 transition-transform"></span>
+                    <span className="text-cocoa-900 font-bold">Ecuador (Manabí)</span>
+                  </div>
+                  <div className="flex items-center gap-2 group cursor-default">
+                    <span className="w-3 h-3 rounded-full bg-gold-400 group-hover:scale-125 transition-transform"></span>
+                    <span className="text-cocoa-900 font-bold">Madagascar (Sambirano)</span>
+                  </div>
+                  <div className="flex items-center gap-2 group cursor-default">
+                    <span className="w-3 h-3 rounded-full bg-cocoa-900 group-hover:scale-125 transition-transform"></span>
+                    <span className="text-cocoa-900 font-bold">Venezuela (Chuao)</span>
+                  </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
       )}
     </>

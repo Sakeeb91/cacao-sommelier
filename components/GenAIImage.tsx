@@ -6,14 +6,21 @@ interface GenAIImageProps {
   alt: string;
   className?: string;
   fallbackSrc?: string;
+  staticSrc?: string;
 }
 
-const GenAIImage: React.FC<GenAIImageProps> = ({ prompt, alt, className, fallbackSrc }) => {
-  const [src, setSrc] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+const GenAIImage: React.FC<GenAIImageProps> = ({ prompt, alt, className, fallbackSrc, staticSrc }) => {
+  const [src, setSrc] = useState<string | null>(staticSrc || null);
+  const [loading, setLoading] = useState(!staticSrc);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    if (staticSrc) {
+      setSrc(staticSrc);
+      setLoading(false);
+      return;
+    }
+
     let mounted = true;
 
     const fetchImage = async () => {
@@ -38,7 +45,7 @@ const GenAIImage: React.FC<GenAIImageProps> = ({ prompt, alt, className, fallbac
     return () => {
       mounted = false;
     };
-  }, [prompt]);
+  }, [prompt, staticSrc]);
 
   if (loading) {
     return (
@@ -51,19 +58,26 @@ const GenAIImage: React.FC<GenAIImageProps> = ({ prompt, alt, className, fallbac
 
   if (error || !src) {
     return (
-      <img 
-        src={fallbackSrc || "https://images.unsplash.com/photo-1549007994-cb92caebd54b?q=80&w=600&auto=format&fit=crop"} 
-        alt={alt} 
-        className={className} 
+      <img
+        src={fallbackSrc || "https://images.unsplash.com/photo-1549007994-cb92caebd54b?q=80&w=600&auto=format&fit=crop"}
+        alt={alt}
+        className={className}
       />
     );
   }
 
   return (
-    <img 
-      src={src} 
-      alt={alt} 
-      className={`${className} animate-fade-in-up`} 
+    <img
+      src={src}
+      alt={alt}
+      className={`${className} animate-fade-in-up`}
+      onError={() => {
+        if (fallbackSrc && src !== fallbackSrc) {
+          setSrc(fallbackSrc);
+        } else {
+          setError(true);
+        }
+      }}
     />
   );
 };
