@@ -1,6 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import GenAIImage from './GenAIImage';
 
 const BentoGrid: React.FC = () => {
+  const [showMapModal, setShowMapModal] = useState(false);
+
+  // Lock scroll when modal is open
+  useEffect(() => {
+    if (showMapModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [showMapModal]);
+
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
@@ -15,7 +27,7 @@ const BentoGrid: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           
           {/* Large Text Card */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-2 bg-white rounded-4xl p-8 md:p-10 smooth-shadow flex flex-col justify-between min-h-[300px]">
+          <div className="col-span-1 md:col-span-2 lg:col-span-2 bg-white rounded-4xl p-8 md:p-10 smooth-shadow flex flex-col justify-between min-h-[300px] relative z-0">
             <div>
               <div className="w-10 h-10 mb-6 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center">
                 <i className="fa-solid fa-fingerprint"></i>
@@ -34,32 +46,51 @@ const BentoGrid: React.FC = () => {
             </a>
           </div>
 
-          {/* Stat Card 1 */}
-          <a 
-            href="#origins" 
-            onClick={(e) => scrollToSection(e, 'origins')}
-            className="col-span-1 bg-cocoa-900 text-white rounded-4xl p-8 smooth-shadow flex flex-col justify-between group cursor-pointer hover:bg-cocoa-800 transition-colors"
+          {/* Stat Card 1: Single Origin Countries (Interactive Map) */}
+          <div 
+            onClick={() => setShowMapModal(true)}
+            className="col-span-1 bg-cocoa-900 text-white rounded-4xl p-8 smooth-shadow flex flex-col justify-between group cursor-pointer hover:bg-cocoa-800 transition-colors relative overflow-hidden"
           >
-            <div className="flex justify-between items-start">
+            {/* AI Background Map */}
+            <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-700 mix-blend-overlay pointer-events-none">
+                <GenAIImage 
+                    prompt="Vintage artistic world map illustration, golden lines on dark brown background, focusing on the equator, elegant, minimalist, high detail"
+                    alt="World Map Texture"
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+                />
+            </div>
+            {/* Gradient Overlay for Text Readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-cocoa-900 via-cocoa-900/50 to-transparent opacity-90"></div>
+
+            <div className="relative z-10 flex justify-between items-start">
               <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
                 <i className="fa-solid fa-globe text-gold-400"></i>
               </div>
-              <i className="fa-solid fa-arrow-up-right text-white/40 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all"></i>
+              <i className="fa-solid fa-expand text-white/40 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all"></i>
             </div>
-            <div>
+            <div className="relative z-10">
               <div className="text-5xl font-serif mb-2">12</div>
-              <div className="text-white/60 text-sm font-medium">Single Origin Countries</div>
+              <div className="text-white/80 text-sm font-medium">Single Origin Countries</div>
             </div>
-          </a>
+          </div>
 
-          {/* Stat Card 2 */}
-          <div className="col-span-1 bg-white rounded-4xl p-8 smooth-shadow flex flex-col justify-between group hover:ring-2 hover:ring-gold-400/30 transition-all">
-            <div className="flex justify-between items-start">
+          {/* Stat Card 2: Traceable Supply Chain */}
+          <div className="col-span-1 bg-white rounded-4xl p-8 smooth-shadow flex flex-col justify-between group hover:ring-2 hover:ring-gold-400/30 transition-all relative overflow-hidden">
+            {/* AI Background Illustration */}
+            <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none">
+                <GenAIImage 
+                    prompt="Minimalist continuous line art illustration connecting a cacao pod to a digital blockchain cube, tech agriculture concept, elegant ink drawing"
+                    alt="Traceability Illustration"
+                    className="w-full h-full object-cover"
+                />
+            </div>
+
+            <div className="relative z-10 flex justify-between items-start">
               <div className="p-2 bg-gray-100 rounded-lg">
                 <i className="fa-solid fa-percent text-cocoa-900"></i>
               </div>
             </div>
-            <div>
+            <div className="relative z-10">
               <div className="text-5xl font-serif mb-2 text-transparent bg-clip-text bg-gradient-to-r from-cocoa-900 to-orange-700">99%</div>
               <div className="text-cocoa-900/60 text-sm font-medium">Traceable Supply Chain</div>
             </div>
@@ -127,6 +158,50 @@ const BentoGrid: React.FC = () => {
             </div>
         </div>
       </div>
+
+      {/* --- Map Modal --- */}
+      {showMapModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-cocoa-900/95 backdrop-blur-md animate-fade-in-up" onClick={() => setShowMapModal(false)}></div>
+            
+            <div className="relative bg-white w-full max-w-5xl aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl animate-fade-in-up flex flex-col">
+                <button 
+                    onClick={() => setShowMapModal(false)}
+                    className="absolute top-6 right-6 z-20 w-12 h-12 bg-white/80 backdrop-blur rounded-full shadow-lg flex items-center justify-center text-cocoa-900 hover:bg-cocoa-900 hover:text-white transition-all hover:rotate-90"
+                >
+                    <i className="fa-solid fa-xmark text-xl"></i>
+                </button>
+
+                <div className="flex-grow relative bg-[#f2e8e5]">
+                    {/* Generative Map */}
+                    <GenAIImage 
+                        prompt="Artistic stylized world map illustration on textured paper, highlighting Ecuador, Madagascar, and Venezuela with golden pins, vintage explorer style, high detail"
+                        alt="Global Sourcing Map"
+                        className="w-full h-full object-cover"
+                    />
+                    
+                    {/* Overlay Info */}
+                    <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-white via-white/90 to-transparent p-8 md:p-12">
+                         <h3 className="font-serif text-4xl text-cocoa-900 mb-4">Global Origins</h3>
+                         <div className="flex flex-wrap gap-4 md:gap-8">
+                            <div className="flex items-center gap-2 group cursor-default">
+                                <span className="w-3 h-3 rounded-full bg-orange-700 group-hover:scale-125 transition-transform"></span>
+                                <span className="text-cocoa-900 font-bold">Ecuador (Manabí)</span>
+                            </div>
+                            <div className="flex items-center gap-2 group cursor-default">
+                                <span className="w-3 h-3 rounded-full bg-gold-400 group-hover:scale-125 transition-transform"></span>
+                                <span className="text-cocoa-900 font-bold">Madagascar (Sambirano)</span>
+                            </div>
+                            <div className="flex items-center gap-2 group cursor-default">
+                                <span className="w-3 h-3 rounded-full bg-cocoa-900 group-hover:scale-125 transition-transform"></span>
+                                <span className="text-cocoa-900 font-bold">Venezuela (Chuao)</span>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      )}
     </>
   );
 };
